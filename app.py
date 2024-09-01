@@ -4,6 +4,7 @@ import re
 import json
 
 import streamlit as st
+st.set_page_config(layout="wide")
 import openai
 from openai import AssistantEventHandler
 from tools import TOOL_MAP
