@@ -20,6 +20,16 @@ def str_to_bool(str_input):
         return False
     return str_input.lower() == "true"
 
+def save_chat_log():
+    with open("chat_log.json", "w") as f:
+        json.dump(st.session_state.chat_log, f)
+
+def load_chat_log():
+    try:
+        with open("chat_log.json", "r") as f:
+            st.session_state.chat_log = json.load(f)
+    except FileNotFoundError:
+        st.session_state.chat_log = []
 
 # Load environment variables
 openai_api_key = os.environ.get("OPENAI_API_KEY")
@@ -281,6 +291,8 @@ def load_chat_screen(assistant_id, assistant_title):
         with st.chat_message("user"):
             st.markdown(user_msg, True)
         st.session_state.chat_log.append({"name": "user", "msg": user_msg})
+        save_chat_log()  # Save chat log after each new message
+
 
         file = None
         if uploaded_file is not None:
@@ -294,6 +306,10 @@ def load_chat_screen(assistant_id, assistant_title):
 
 
 def main():
+
+        # Load chat log from file
+    if "chat_log" not in st.session_state:
+        load_chat_log()
     # Check if multi-agent settings are defined
     multi_agents = os.environ.get("OPENAI_ASSISTANTS", None)
     single_agent_id = os.environ.get("ASSISTANT_ID", None)
@@ -334,3 +350,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    save_chat_log()
